@@ -599,7 +599,7 @@ def ei_violation_all_improve(trainer, trials, params, deltas, str_var_1, vars_1,
 
 
 
-# In[208]:
+# In[211]:
 
 
 def find_best_improve_lin_cost(cost_fn, pred_fn, data):
@@ -625,7 +625,7 @@ def find_best_improve_lin_cost(cost_fn, pred_fn, data):
 
     except gp.GurobiError as e:
       print("Error code " + str(e.errno) + ": " + str(e))
-    print("solved!")
+    #print("solved!")
 
   return delta_necessary
 
@@ -677,11 +677,10 @@ def ei_violation(trainer, trials, params, deltas, cost_fn, str_var_1, vars_1, st
           lin_combo = np.dot(improved_features, coefficients) + intercept
           logits = 1 / (1 + np.exp(-lin_combo))
           return (probabilities >= 0.5).astype(int)'''
-        best_vector_improve = find_best_improve_lin_cost(cost_fn, pred_fn, data_unqualified)
+        best_delta_improve = find_best_improve_lin_cost(cost_fn, pred_fn, data_unqualified)
         for d, delta in enumerate(deltas):
-          
           try:
-            temp_y =  np.where(deltas_improve <= delta)
+            temp_y =  np.where(best_delta_improve <= delta)
             temp_0, temp_1 = ei_calc(temp_y, data_S[pred_y == 0])
             if (temp_0 == None or temp_1 == None):
               failed_trials[d] += 1
