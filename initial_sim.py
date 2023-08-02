@@ -610,6 +610,7 @@ def find_best_improve_lin_cost(cost_fn, pred_fn, data):
   for individual in range(n):
     try:
       model = gp.Model("best_improvement")
+      model.Params.LogToConsole = 0
       improve_vector = model.addMVar(shape=(1,d), name="added_vector")
       model.setObjective(improve_vector@cost_fn['w'] + cost_fn['b'], GRB.MINIMIZE)
       # Add the constraint for less than delta cost
