@@ -147,14 +147,14 @@ W_AS = np.array([0, -0.2, 0.2])
 W_C = np.array([0.6, 0.4, -0.1])'''
 
 
-# In[75]:
+# In[214]:
 
 
 # Data generation calls
 #dm = LinearDecisionModel(n_samples = n, d_a = d_a, d_c = d_c, W_S = W_S, W_A = W_A_new, W_AS = W_AS, W_C = W_C)
 
 default_params = {
-    'n_samples': 100000, 
+    'n_samples': 1000, 
     'b': 0,  
     's_a_const': 1, 
     'a_var': 1, 
@@ -599,7 +599,7 @@ def ei_violation_all_improve(trainer, trials, params, deltas, str_var_1, vars_1,
 
 
 
-# In[211]:
+# In[264]:
 
 
 def find_best_improve_lin_cost(cost_fn, pred_fn, data):
@@ -621,7 +621,8 @@ def find_best_improve_lin_cost(cost_fn, pred_fn, data):
       # Get the optimal solution
       if model.status == GRB.OPTIMAL:
         best_improvement[individual] = improve_vector.X
-        delta_necessary[individual] = delta
+        #print(model.getObjective().getValue())
+        delta_necessary[individual] = model.getObjective().getValue()
 
     except gp.GurobiError as e:
       print("Error code " + str(e.errno) + ": " + str(e))
@@ -630,7 +631,6 @@ def find_best_improve_lin_cost(cost_fn, pred_fn, data):
   return delta_necessary
 
 def ei_violation(trainer, trials, params, deltas, cost_fn, str_var_1, vars_1, str_var_2, vars_2):
-  print(trials)
   ei_data = np.zeros((deltas.shape[0], vars_1.shape[0], vars_2.shape[0]))
   mask = np.zeros((deltas.shape[0], vars_1.shape[0], vars_2.shape[0]), dtype=bool)
   best_improve = np.zeros((deltas.shape[0], 2, vars_1.shape[0], vars_2.shape[0]))
@@ -641,6 +641,7 @@ def ei_violation(trainer, trials, params, deltas, cost_fn, str_var_1, vars_1, st
       failed_trials = np.zeros(deltas.shape[0])
       for trial in range(trials):
         #DATA
+        #print(trial)
         params[str_var_1] = var_1
         params[str_var_2] = var_2
         #print("var 1: ", var_1, " and var 2: ", var_2)
@@ -679,15 +680,17 @@ def ei_violation(trainer, trials, params, deltas, cost_fn, str_var_1, vars_1, st
           return (probabilities >= 0.5).astype(int)'''
         best_delta_improve = find_best_improve_lin_cost(cost_fn, pred_fn, data_unqualified)
         for d, delta in enumerate(deltas):
-          try:
-            temp_y =  np.where(best_delta_improve <= delta)
-            temp_0, temp_1 = ei_calc(temp_y, data_S[pred_y == 0])
-            if (temp_0 == None or temp_1 == None):
-              failed_trials[d] += 1
-            else:
-              ei_data[d, i, j] += (temp_1-temp_0)/trials
-          except:
+          temp_y =  np.where(best_delta_improve <= delta, 1, 0)
+          #print("delta: ", delta)
+          #print("mean: ", temp_y.mean())
+          temp_0, temp_1 = ei_calc(temp_y, data_S[pred_y == 0])
+          #print("temp_0: ", temp_0, " temp_1: ", temp_1)
+          if (temp_0 == None or temp_1 == None):
             failed_trials[d] += 1
+          else:
+            ei_data[d, i, j] += (temp_1-temp_0)/trials
+          #except:
+           # failed_trials[d] += 1
 
       for d in range(deltas.shape[0]): 
         if failed_trials[d] >= trials*3/4:
@@ -841,13 +844,13 @@ for i in range(4):
 
 # ##  Experiment SY: S->A vs. S->Y
 
-# In[ ]:
+# In[265]:
 
 
 simulation_SY = {
   "trials": 5,
-  "consts_sa": np.arange(0, 10, 0.25),
-  "consts_sy": np.arange(0, 10, 0.25),
+  "consts_sa": np.arange(0, 10, 0.5),
+  "consts_sy": np.arange(0, 10, 0.5),
   "deltas": np.array([0.1, 0.5, 1, 2.5, 5, 10]),
   "type_effort": ["Lowest", "Low", "Mid", "High", "Higher", "Highest"],
   "type_sims": ["SY_A_", "SY_C_", "SY_AC_"],
@@ -855,7 +858,7 @@ simulation_SY = {
   "imprtnc_title_sims": ["A", "C", "Difference between A and C", "Positive version of A and C"]
 }
 
-cost_fn ={'w': np.array([1, 1]),'b': 0}
+cost_fn ={'w': np.array([100000, 1]),'b': 0}
 
 ei_data_SY_test = ei_violation(LogisticRegression(), simulation_SY["trials"], 
                                params = default_params.copy(),
@@ -876,7 +879,7 @@ ei_data_SY = ei_violation_all_improve(LogisticRegression(), simulation_SY["trial
 
 
 
-# In[87]:
+# In[266]:
 
 
 #DIFF IN IMPROVABILITY GRAPHS
@@ -887,6 +890,20 @@ for i in range(3):
                                   simulation_SY["consts_sa"], r"$\alpha$ (S$\rightarrow$A)", 
                                   simulation_SY["consts_sy"], r"$m_S$ (S$\rightarrow$Y)", 
                                   simulation_SY["type_effort"][d], simulation_SY["type_sims"][i], delta)
+  
+
+
+# In[267]:
+
+
+#DIFF IN IMPROVABILITY GRAPHS
+for d, delta in enumerate(simulation_SY["deltas"]):
+  #print(ei_data_SY_test["ei_data"][d])
+  #print(ei_data_SY_test["mask"][d])
+  all_improve_heat_map_effort(ei_data_SY_test["ei_data"][d], ei_data_SY_test["mask"][d], 
+                              simulation_SY["consts_sa"], r"$\alpha$ (S$\rightarrow$A)", 
+                              simulation_SY["consts_sy"], r"$m_S$ (S$\rightarrow$Y)", 
+                              simulation_SY["type_effort"][d], "SY_TEST_AC", delta)
   
 
 
