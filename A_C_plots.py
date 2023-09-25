@@ -60,7 +60,7 @@ def plot_a_c(coordinates1, labels1, coordinates2, labels2, classifier=None):
     ax2.legend()
 
     # Add a global title above all subplots
-    plt.suptitle("A and C values per population segment")
+    plt.suptitle("Population and classifier $f(A,C)$")
     # Add a dashed line to both plots
     if classifier:
         coef = classifier.coef_[0]  # Get the coefficients of the decision boundary
@@ -112,6 +112,7 @@ if __name__ == "__main__":
              majo_ac, majo_pd_data.Y,
              classifier=model)
 
+    # # todo: add line below classifier, to separate improvables/non-improvables; where is \delta here?
     # cost_fn = {'w': np.array([1, 1]), 'b': 0}
     #
     # data_summary = {
