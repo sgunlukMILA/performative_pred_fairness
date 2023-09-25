@@ -14,7 +14,7 @@ import matplotlib.colors as mcolors
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn import tree
 from sklearn.neural_network import MLPClassifier
-get_ipython().system(' pip install lime')
+# get_ipython().system(' pip install lime')
 import lime
 from lime import lime_tabular
 from sklearn.model_selection import train_test_split
@@ -411,7 +411,7 @@ def find_pred_improve_lin_cost(dt, cost_fn, pred_fn, data):
   return delta_necessary, best_improvement, which_improve
 
 
-def find_real_improve_lin_cost(dt, cost_fn, data):
+def find_best_real_improve_lin_cost(dt, cost_fn, data):
   """
     Find the best improvement for each individual in the dataset considering cost constraints.
 
@@ -622,6 +622,17 @@ def new_fairness_violation(trainer, trials, params, deltas, cost_fn, str_var_1, 
 
 # In[722]:
 
+default_params = {
+        'n_samples': 1000,
+        's_a_const': 1,
+        'a_var': 1,
+        's_c_const': 0,
+        'a_c_const': 1,
+        'c_var': 1,
+        's_y_const': 1,
+        'c_y_const': 1,
+        'y_var': 0.1
+    }
 
 simulation_gaming = {
   "trials": 15,
