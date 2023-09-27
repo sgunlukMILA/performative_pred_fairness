@@ -63,6 +63,21 @@ class ScalarLinearDecisionModel():
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
+    def get_real_boundary(self, s):
+        """
+        the real boundary where the true data generation process assigns E[Y]=0.5
+        This quantity depends on what Y is conditioned on.
+        The simplest one to derive (and arguably the "truest" one) is E[Y|C,S]=0.5, which we use for now
+
+        For a given S, the scalar value of C is returned, which yields E[Y|C,S]=0.5
+        Args:
+            s: value of S variable \in -1, 1
+
+        Returns: value of C which yields E[Y|C,S] = 0.5
+
+        """
+        return -(self.s_y_const/self.c_y_const) * s
+
     def generate_basic_data(self):
         self.A = self.S_sym * self.s_a_const + self.a_noise
         self.C = self.A * self.a_c_const + self.S_sym * self.s_c_const + self.c_noise

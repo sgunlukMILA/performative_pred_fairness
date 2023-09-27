@@ -30,7 +30,7 @@ def plot_a_c_single(coordinates, labels):
     plt.show()
 
 
-def plot_a_c(coordinates1, labels1, coordinates2, labels2, classifier=None):
+def plot_a_c(coordinates1, labels1, coordinates2, labels2, classifier=None, real_boundary_maj=None, real_boundary_min=None):
     """
     Create two scatter plots on top of each other with different symbols for each data point.
 
@@ -71,6 +71,28 @@ def plot_a_c(coordinates1, labels1, coordinates2, labels2, classifier=None):
         ax1.plot(x_boundary, y_boundary, 'k--', label='Decision Boundary')
         ax2.plot(x_boundary, y_boundary, 'k--', label='Decision Boundary')
 
+        # Add a legend for the dashed line in both subplots
+        ax1.legend(loc='upper right', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
+        ax2.legend(loc='lower left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
+
+    if real_boundary_maj:
+        x_boundary = np.linspace(min(np.min(coordinates1[:, 0]), np.min(coordinates2[:, 0])),
+                                 max(np.max(coordinates1[:, 0]), np.max(coordinates2[:, 0])), 100)
+        y_boundary = real_boundary_maj * np.ones_like(x_boundary)
+        ax1.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$E[Y|C,S]=0.5$')
+
+        # Add a legend for the dashed line in both subplots
+        ax1.legend(loc='upper right', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
+
+    if real_boundary_min:
+        x_boundary = np.linspace(min(np.min(coordinates1[:, 0]), np.min(coordinates2[:, 0])),
+                                 max(np.max(coordinates1[:, 0]), np.max(coordinates2[:, 0])), 100)
+        y_boundary = real_boundary_min * np.ones_like(x_boundary)
+        ax2.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$E[Y|C,S]=0.5$')
+
+        # Add a legend for the dashed line in both subplots
+        ax2.legend(loc='lower left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
+
     # Adjust spacing between subplots
     plt.tight_layout()
 
@@ -110,9 +132,11 @@ if __name__ == "__main__":
 
     plot_a_c(mino_ac, mino_pd_data.Y,
              majo_ac, majo_pd_data.Y,
-             classifier=model)
+             classifier=model,
+             real_boundary_maj=data_train.get_real_boundary(s=1),
+             real_boundary_min=data_train.get_real_boundary(s=-1))
 
-    # # todo: add line below classifier, to separate improvables/non-improvables; where is \delta here?
+
     # cost_fn = {'w': np.array([1, 1]), 'b': 0}
     #
     # data_summary = {
