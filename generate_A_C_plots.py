@@ -75,20 +75,20 @@ def plot_a_c(coordinates1, labels1, coordinates2, labels2, classifier=None, real
         ax1.legend(loc='upper right', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
         ax2.legend(loc='lower left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
 
-    if real_boundary_maj:
-        x_boundary = np.linspace(min(np.min(coordinates1[:, 0]), np.min(coordinates2[:, 0])),
-                                 max(np.max(coordinates1[:, 0]), np.max(coordinates2[:, 0])), 100)
-        y_boundary = real_boundary_maj * np.ones_like(x_boundary)
-        ax1.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$E[Y|C,S]=0.5$')
-
-        # Add a legend for the dashed line in both subplots
-        ax1.legend(loc='upper right', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
-
     if real_boundary_min:
         x_boundary = np.linspace(min(np.min(coordinates1[:, 0]), np.min(coordinates2[:, 0])),
                                  max(np.max(coordinates1[:, 0]), np.max(coordinates2[:, 0])), 100)
         y_boundary = real_boundary_min * np.ones_like(x_boundary)
-        ax2.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$E[Y|C,S]=0.5$')
+        ax1.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$E[Y|C,S=-1]=0.5$')
+
+        # Add a legend for the dashed line in both subplots
+        ax1.legend(loc='upper right', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
+
+    if real_boundary_maj:
+        x_boundary = np.linspace(min(np.min(coordinates1[:, 0]), np.min(coordinates2[:, 0])),
+                                 max(np.max(coordinates1[:, 0]), np.max(coordinates2[:, 0])), 100)
+        y_boundary = real_boundary_maj * np.ones_like(x_boundary)
+        ax2.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$E[Y|C,S=+1]=0.5$')
 
         # Add a legend for the dashed line in both subplots
         ax2.legend(loc='lower left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
