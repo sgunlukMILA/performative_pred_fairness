@@ -80,7 +80,7 @@ def find_best_real_improve_lin_cost(dt, cost_fn, data):
         try:
             model = gp.Model("best_improvement")
             model.Params.LogToConsole = 0
-            improve_vector = model.addMVar(shape=(1, d), name="added_vector")
+            improve_vector = model.addMVar(shape=(1, d), name="added_vector", lb=0)
             # improve_A = model.addVar(lb=0.0, ub=float('inf'), vtype=GRB.CONTINUOUS, name="improve_A")
             # improve_C = model.addVar(lb=0.0, ub=float('inf'), vtype=GRB.CONTINUOUS, name="improve_C")
             # improve_vector = np.array([improve_A, improve_C])

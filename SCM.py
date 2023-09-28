@@ -58,6 +58,7 @@ class ScalarLinearDecisionModel():
         self.C = np.empty((self.n_samples, 1))
         self.Y_logit = np.empty((self.n_samples, 1))
         self.Y = np.empty((self.n_samples, 1))
+        self.is_improvable = None
         # self.necessary_improv = np.empty((self.n_samples, 2))
 
     def sigmoid(self, x):
@@ -126,12 +127,26 @@ class ScalarLinearDecisionModel():
         temp_Y = np.random.binomial(n=1, p=y_logit)
         return temp_Y
 
+    def store_is_improvable(self, real_best_delta, max_delta):
+        """
+        computes and stores a bool array, indicating whether each agent can improve with a budget of max_delta
+        Args:
+            real_best_delta: np.array, shape: (n,) lowest delta with which each agent can increase their P(Y) past 0.5,
+            if it is < 0.5 (should be computed outside this class)
+            max_delta: max effort allowed
+
+        Returns:
+
+        """
+        self.is_improvable = (real_best_delta < max_delta) & (real_best_delta > 0)
+
     def ts_to_df(self, describe=False):
         sim_data = pd.DataFrame()
         sim_data["S"] = self.S
         sim_data["A"] = self.A
         sim_data["C"] = self.C
         sim_data["Y"] = self.Y
+        sim_data["is_improvable"] = self.is_improvable
         if describe:
             print(sim_data.describe())
             print(sim_data.loc[sim_data['S'] == 0].describe())
