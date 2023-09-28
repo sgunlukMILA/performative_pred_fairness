@@ -44,7 +44,7 @@ def plot_a_c(coordinates1, labels1, is_improv1,
     - line_params (dict): A dictionary containing the line parameters with 'w' as a 2-D array representing the slope and 'b' as a 1-D array representing the bias.
     """
     # Create a figure with two subplots stacked vertically
-    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True)
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True, sharey=True, figsize=(11, 8))
 
     # Plot the first set of circles and crosses
     ax1.scatter(coordinates1[:, 0][(labels1 == 0) & (is_improv1 == 0)],
@@ -81,6 +81,36 @@ def plot_a_c(coordinates1, labels1, is_improv1,
     ax2.set_title('majority')
     ax2.legend()
 
+    # Plot the second set of circles and crosses
+    ax3.scatter(coordinates1[:, 0][(labels1 == 0) & (is_improv1 == 0)],
+                coordinates1[:, 1][(labels1 == 0) & (is_improv1 == 0)],
+                marker='o', label='Y=0', color='b', s=15)
+    ax3.scatter(coordinates1[:, 0][(labels1 == 1) & (is_improv1 == 0)],
+                coordinates1[:, 1][(labels1 == 1) & (is_improv1 == 0)],
+                marker='x', label='Y=1', color='r', s=15, alpha=0.5)
+    ax3.scatter(coordinates1[:, 0][(labels1 == 0) & (is_improv1 == 1)],
+                coordinates1[:, 1][(labels1 == 0) & (is_improv1 == 1)],
+                marker='o', label=f'Y=0 improvable, $\delta = {max_delta}$', color='g', s=15)
+    ax3.scatter(coordinates1[:, 0][(labels1 == 1) & (is_improv1 == 1)],
+                coordinates1[:, 1][(labels1 == 1) & (is_improv1 == 1)],
+                marker='x', label=f'Y=1 improvable, $\delta = {max_delta}$', color='g', s=15, alpha=0.5)
+    ax3.scatter(coordinates2[:, 0][(labels2 == 0) & (is_improv2 == 0)],
+                coordinates2[:, 1][(labels2 == 0) & (is_improv2 == 0)],
+                marker='o', color='b', s=15)
+    ax3.scatter(coordinates2[:, 0][(labels2 == 1) & (is_improv2 == 0)],
+                coordinates2[:, 1][(labels2 == 1) & (is_improv2 == 0)],
+                marker='x', color='r', s=15, alpha=0.5)
+    ax3.scatter(coordinates2[:, 0][(labels2 == 0) & (is_improv2 == 1)],
+                coordinates2[:, 1][(labels2 == 0) & (is_improv2 == 1)],
+                marker='o', color='g', s=15)
+    ax3.scatter(coordinates2[:, 0][(labels2 == 1) & (is_improv2 == 1)],
+                coordinates2[:, 1][(labels2 == 1) & (is_improv2 == 1)],
+                marker='x', color='g', s=15, alpha=0.5)
+    ax3.set_xlabel('A (ancestor) value')
+    ax3.set_ylabel('C (direct cause) value')
+    ax3.set_title('whole population')
+    ax3.legend()
+
     # Add a global title above all subplots
     plt.suptitle("Population and classifier $f(A,C)$")
     # Add a dashed line to both plots
@@ -92,28 +122,34 @@ def plot_a_c(coordinates1, labels1, is_improv1,
         y_boundary = (-coef[0] * x_boundary - intercept) / coef[1]
         ax1.plot(x_boundary, y_boundary, 'k--', label='$\hat{f}(C,A)=0.5$')
         ax2.plot(x_boundary, y_boundary, 'k--', label='$\hat{f}(C,A)=0.5$')
+        ax3.plot(x_boundary, y_boundary, 'k--', label='$\hat{f}(C,A)=0.5$')
 
         # Add a legend for the dashed line in both subplots
         ax1.legend(loc='upper right', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
         ax2.legend(loc='lower left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
+        ax3.legend(loc='lower left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
 
     if real_boundary_min:
         x_boundary = np.linspace(min(np.min(coordinates1[:, 0]), np.min(coordinates2[:, 0])),
                                  max(np.max(coordinates1[:, 0]), np.max(coordinates2[:, 0])), 100)
         y_boundary = real_boundary_min * np.ones_like(x_boundary)
         ax1.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$\mathbb{E}[Y|C,S=-1]=0.5$')
+        ax3.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$\mathbb{E}[Y|C,S=-1]=0.5$')
 
         # Add a legend for the dashed line in both subplots
         ax1.legend(loc='upper right', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
+        ax3.legend(loc='lower left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
 
     if real_boundary_maj:
         x_boundary = np.linspace(min(np.min(coordinates1[:, 0]), np.min(coordinates2[:, 0])),
                                  max(np.max(coordinates1[:, 0]), np.max(coordinates2[:, 0])), 100)
         y_boundary = real_boundary_maj * np.ones_like(x_boundary)
         ax2.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$\mathbb{E}[Y|C,S=+1]=0.5$')
+        ax3.plot(x_boundary, y_boundary, 'gray', linestyle=':', label='$\mathbb{E}[Y|C,S=+1]=0.5$')
 
         # Add a legend for the dashed line in both subplots
         ax2.legend(loc='upper left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
+        ax3.legend(loc='upper left', frameon=True, fontsize='x-small')  # Adjust the 'loc' parameter as needed
 
     # Adjust spacing between subplots
     plt.tight_layout()
