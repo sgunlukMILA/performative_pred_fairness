@@ -121,6 +121,7 @@ if __name__ == "__main__":
 
     default_params = {
         'n_samples': 1000,
+        'p_majority': 0.5,
         's_a_const': 1,
         'a_var': 1,
         's_c_const': 0,

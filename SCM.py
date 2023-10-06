@@ -39,6 +39,7 @@ class ScalarLinearDecisionModel():
     def __init__(self, params):
         # n_samples, s_a_const = 1, a_var = 1, s_c_const = 0,  a_c_const = 1, c_var = 1, s_y_const = 1, c_y_const = 1, y_var = 0.1):
         self.n_samples = params['n_samples']
+        self.p_majority = params['p_majority']
         self.s_a_const = params['s_a_const']
         self.a_var = params['a_var']
         self.a_noise = np.random.normal(loc=np.zeros(self.n_samples), scale=self.a_var * np.ones(self.n_samples))
@@ -51,7 +52,7 @@ class ScalarLinearDecisionModel():
         self.y_var = params['y_var']
         # y_noise is no longer used, only bern sampling instead
         self.y_noise = np.random.normal(loc=np.zeros(self.n_samples), scale=self.y_var * np.ones(self.n_samples))
-        self.S = np.random.binomial(n=1, p=0.75, size=self.n_samples)
+        self.S = np.random.binomial(n=1, p=self.p_majority, size=self.n_samples)
         # make labels s = {-1, 1} by doing (2S-1)
         self.S_sym = 2 * self.S - 1
         self.A = np.empty((self.n_samples, 1))

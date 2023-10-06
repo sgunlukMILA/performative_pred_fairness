@@ -32,7 +32,7 @@ def plot_a_c_single(coordinates, labels):
 
 def plot_a_c(coordinates1, labels1, is_improv1,
              coordinates2, labels2, is_improv2,
-             classifier=None, real_boundary_maj=None, real_boundary_min=None, max_delta=None):
+             classifier=None, real_boundary_maj=None, real_boundary_min=None, max_delta=None, dt=None):
     """
     Create two scatter plots on top of each other with different symbols for each data point.
 
@@ -164,6 +164,7 @@ if __name__ == "__main__":
 
     default_params = {
         'n_samples': 1000,
+        'p_majority': 0.5,
         's_a_const': 1,
         'a_var': 1,
         's_c_const': 0,
@@ -211,5 +212,5 @@ if __name__ == "__main__":
              classifier=model,
              real_boundary_maj=data_train.get_real_boundary(s=1),
              real_boundary_min=data_train.get_real_boundary(s=-1),
-             max_delta=max_delta)
+             max_delta=max_delta, dt=data_train)
 
