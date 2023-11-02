@@ -159,49 +159,50 @@ def plot_a_c(coordinates1, labels1, is_improv1,
 
 if __name__ == "__main__":
     from sklearn.linear_model import LogisticRegression
-    from SCM import ScalarLinearDecisionModel
-    from improvements_fcs import find_pred_improve_lin_cost, find_best_real_improve_lin_cost
+    from SCM import ScalarLinearDecisionModel, NewScalarLinearDecisionModel
+    from optimization_helper import find_pred_improve_lin_cost, find_real_improve_lin_cost
 
     default_params = {
-        'n_samples': 1000,
+        'n_samples': 1000, 
+        'input_dim': 2,
+        'intervention_dim': 2,
         'p_majority': 0.5,
-        's_a_const': 1,
-        'a_var': 1,
-        's_c_const': 0,
-        'a_c_const': 1,
-        'c_var': 1,
-        's_y_const': 1,
+        's_u_const': 0,
+        'u_var': 1,
+        's_a_const': 1, 
+        'u_a_const': 1,
+        'a_var': 1, 
+        's_c_const': 1,  
+        'a_c_const': 1, 
+        'c_var': 1, 
+        's_y_const': 1, 
         'c_y_const': 1,
-        'y_var': 0.1
-    }
+        'u_y_const': 1,
+        'y_var': 0.1,
+    
+}
 
     # generate data
-    data_train = ScalarLinearDecisionModel(default_params)
+    data_train = NewScalarLinearDecisionModel(default_params)
     data_train.generate_basic_data()
-    data_train_AC = np.stack((data_train.A, data_train.C), axis=1)
+    data_train_features = data_train.get_features()
 
     # train model
-    model = LogisticRegression().fit(data_train_AC, data_train.Y)
+    model = LogisticRegression().fit(data_train_features, data_train.Y)
     pred_fn = {'w': model.coef_.flatten(), 'b': model.intercept_[0]}
 
     # get improvables info
     cost_fn = {'w': np.array([1, 1]), 'b': 0}
-    data_summary = {
-        "c_noise": data_train.c_noise,
-        "S": data_train.S,
-        "AC": np.stack((data_train.A, data_train.C), axis=1),
-        "Y_logit": data_train.Y_logit,
-        "Y": data_train.Y
-    }
+    data_summary = data_train.get_data_df()
     # pred_best_delta, pred_best_improvement, pred_which_improve = find_pred_improve_lin_cost(data_train, cost_fn,
     #                                                                                         pred_fn, data_summary)
-    real_best_delta, real_best_improvement, real_which_improve = find_best_real_improve_lin_cost(data_train, cost_fn,
+    real_best_delta, real_best_improvement, real_which_improve = find_real_improve_lin_cost(data_train, cost_fn,
                                                                                                  data_summary)
     max_delta = 1
     data_train.store_is_improvable(real_best_delta, max_delta=max_delta)
 
     # plot data
-    pd_data = data_train.ts_to_df()
+    pd_data = data_train.get_data_df()
     mino_pd_data = pd_data.loc[pd_data['S'] == 0]
     mino_ac = np.stack((mino_pd_data.A, mino_pd_data.C), axis=1)
     majo_pd_data = pd_data.loc[pd_data['S'] == 1]
