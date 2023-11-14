@@ -16,6 +16,9 @@ labels = {
     'c_y_const': r"$m_C$ (C$\rightarrow$Y)",
     'u_a_const': r"$\alpha_U$ (U$\rightarrow$A)",
     'u_y_const': r"$m_U$ (U$\rightarrow$Y)",
+    'w_A' : r"Learned coeff of feature $A$",
+    'w_C' : r"Learned coeff of feature $C$",
+    'b' : r"Learned intercept $b$",
 }
 
 def initialize_graph_folder(params):
@@ -105,7 +108,7 @@ def heat_map_effort(sim_params, results, type_graph, delta=0, save=False, folder
   # Initialize data
   results = np.flip(results, axis = 0)
   var_I = np.flip(sim_params["vars_0"], axis = 0)
-  var_J = np.flip(sim_params["vars_1"], axis = 0)
+  var_J = sim_params["vars_1"]
     
   # Select appropriate min and max for heatmap
   if (False and np.min(results) >= 0 and np.max(results) <= 1):

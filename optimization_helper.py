@@ -39,7 +39,16 @@ def find_pred_improve_lin_cost(dgp, cost_fn, pred_fn, data):
         #print(model.getObjective().getValue())
         delta_necessary[individual] = model.getObjective().getValue()
       else:
-        print("ERROR")
+        # Print constraints
+        print("Constraints:")
+        print(f"  {improved_features} @ {pred_fn['w']} + {pred_fn['b']} >= 0.000000001")
+
+        # Print objective
+        print(f"Objective: {improvement_vector} @ {cost_fn['w']} + {cost_fn['b']} (MINIMIZE)")
+
+        print("ERROR: OPT FAILED")
+        print(improvement_vector.X)
+        print(model.getObjective().getValue())
 
     except gp.GurobiError as e:
       print("Error code " + str(e.errno) + ": " + str(e))
